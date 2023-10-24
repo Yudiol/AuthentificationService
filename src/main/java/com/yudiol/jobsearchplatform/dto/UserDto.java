@@ -1,29 +1,29 @@
 package com.yudiol.jobsearchplatform.dto;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.data.annotation.Id;
+import lombok.ToString;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Setter
 @Getter
+@ToString
+@Schema(description = "UserDto принимает name, surname, login и password")
 public class UserDto {
 
-    @Column(name = "name")
+    @Schema(description = "Имя", example = "Иван")
     private String name;
 
-    @Column(name = "surname")
+    @Schema(description = "Фамилия", example = "Иванов")
     private String surname;
 
-    @Column(name = "email")
+    @Schema(description = "Почта", example = "Ivan@mail.com")
     private String email;
 
-    @Column(name = "password")
+    @Schema(description = "Пароль", example = "wH&bkYvkV(aD")
     private String password;
 }
