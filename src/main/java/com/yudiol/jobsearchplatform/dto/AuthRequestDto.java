@@ -5,13 +5,15 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Setter
 @Getter
-@Schema(description = "AuthRequestDto принимает login и password")
+@ToString
+@Schema(description = "AuthRequestDto принимает username и password")
 public class AuthRequestDto {
-    private String login;
+    private String username;
     private String password;
 }

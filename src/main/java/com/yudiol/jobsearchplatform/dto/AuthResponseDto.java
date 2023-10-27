@@ -13,6 +13,6 @@ import lombok.Setter;
 @Schema(description = "AuthResponseDto отдаёт id, login и token")
 public class AuthResponseDto {
     private Long id;
-    private String login;
+    private String email;
     private String token;
 }
