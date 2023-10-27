@@ -2,9 +2,12 @@ package com.yudiol.jobsearchplatform.controller;
 
 import com.yudiol.jobsearchplatform.dto.AuthRequestDto;
 import com.yudiol.jobsearchplatform.dto.AuthResponseDto;
+import com.yudiol.jobsearchplatform.dto.RefreshToken;
+import com.yudiol.jobsearchplatform.dto.RefreshTokenRequestDto;
 import com.yudiol.jobsearchplatform.dto.UserDto;
 import com.yudiol.jobsearchplatform.model.User;
 import com.yudiol.jobsearchplatform.service.AuthService;
+import com.yudiol.jobsearchplatform.service.RefreshTokenService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,29 +20,51 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-//@RequestMapping("/auth")
+@RequestMapping("/auth")
 @ResponseStatus(HttpStatus.OK)
 @RequiredArgsConstructor
 public class AuthController {
 
     private final AuthService authService;
+    private final RefreshTokenService refreshTokenService;
 
-    @PostMapping("auth/reg")
+    @PostMapping("/reg")
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Регистрация пользователя")
     public AuthResponseDto register(@RequestBody UserDto userDto) {
+        System.out.println("Регистрация пользователя");
         return authService.register(userDto);
     }
 
-    @PostMapping("auth/login")
+    @PostMapping("/login")
     @Operation(summary = "Login")
     public AuthResponseDto createAuthToken(@RequestBody AuthRequestDto authRequestDto) {
-
-        return authService.createAuthToken(authRequestDto);
+        System.out.println("login");
+        AuthResponseDto authResponseDto = authService.createAuthToken(authRequestDto);
+        RefreshToken refreshToken = refreshTokenService.createRefreshToken(authRequestDto.getUsername());
+        authResponseDto.setRefreshToken(refreshToken.getToken());
+        return authResponseDto;
     }
 
-    @GetMapping("users/{id}")
-    public User findOne(@PathVariable("id") Long id){
+    @PostMapping("/refresh")
+    @Operation(summary = "Обновить access token")
+    public AuthResponseDto refreshToken(@RequestBody RefreshTokenRequestDto refreshTokenRequestDto) {
+        return refreshTokenService.findByToken(refreshTokenRequestDto.getRefreshToken())
+                .map(refreshTokenService::verifyExpiredToken)
+                .map(RefreshToken::getUser)
+                .map(user -> {
+                    String accessToken = authService.getJwtToken(user.getEmail());
+                    return AuthResponseDto.builder()
+                            .id(user.getId())
+                            .email(user.getEmail())
+                            .accessToken(accessToken)
+                            .refreshToken(refreshTokenRequestDto.getRefreshToken())
+                            .build();
+                }).orElseThrow(() -> new RuntimeException("Something went wrong, access token has not been updated"));
+    }
+
+    @GetMapping("/{id}")
+    public User findOne(@PathVariable("id") Long id) {
         return authService.findById(id);
     }
 }

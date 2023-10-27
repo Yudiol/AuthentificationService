@@ -1,6 +1,5 @@
 package com.yudiol.jobsearchplatform.config;
 
-import com.yudiol.jobsearchplatform.model.Role;
 import com.yudiol.jobsearchplatform.security.UserDetailServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -33,7 +32,7 @@ public class SecurityConfig {
                 .cors(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll()
-                        .requestMatchers("/users/**").hasAuthority(Role.USER.toString())
+//                        .requestMatchers("/users/**").hasAuthority(Role.USER.toString())
                         .anyRequest().authenticated())
                 .httpBasic(Customizer.withDefaults())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

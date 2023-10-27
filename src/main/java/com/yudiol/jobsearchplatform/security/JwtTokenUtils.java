@@ -20,11 +20,11 @@ public class JwtTokenUtils {
     @Value("${jwt.secret}")
     private String secret;
 
-    @Value("${jwt.lifetime}")
-    private Duration lifetime;
+    @Value("${jwt.lifetimeAccessToken}")
+    private Duration lifetimeAccessToken;
 
     public String generateToken(UserDetails userDetails) {
-        Date expirationDate = Date.from(ZonedDateTime.now().plusMinutes(lifetime.toMinutes()).toInstant());
+        Date expirationDate = Date.from(ZonedDateTime.now().plusMinutes(lifetimeAccessToken.toMinutes()).toInstant());
         List<String> roles = userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
         Map<String, Object> claims = new HashMap<>();
         claims.put("roles", roles);
