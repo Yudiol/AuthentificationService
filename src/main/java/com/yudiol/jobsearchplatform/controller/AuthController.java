@@ -11,6 +11,7 @@ import com.yudiol.jobsearchplatform.service.RefreshTokenService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -31,15 +32,13 @@ public class AuthController {
     @PostMapping("/reg")
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Регистрация пользователя")
-    public AuthResponseDto register(@RequestBody UserDto userDto) {
-        System.out.println("Регистрация пользователя");
+    public AuthResponseDto register(@RequestBody UserDto userDto, BindingResult bindingResult) {
         return authService.register(userDto);
     }
 
     @PostMapping("/login")
     @Operation(summary = "Login")
-    public AuthResponseDto createAuthToken(@RequestBody AuthRequestDto authRequestDto) {
-        System.out.println("login");
+    public AuthResponseDto createAuthToken(@RequestBody AuthRequestDto authRequestDto, BindingResult bindingResult) {
         AuthResponseDto authResponseDto = authService.createAuthToken(authRequestDto);
         RefreshToken refreshToken = refreshTokenService.createRefreshToken(authRequestDto.getUsername());
         authResponseDto.setRefreshToken(refreshToken.getToken());
@@ -48,7 +47,7 @@ public class AuthController {
 
     @PostMapping("/refresh")
     @Operation(summary = "Обновить access token")
-    public AuthResponseDto refreshToken(@RequestBody RefreshTokenRequestDto refreshTokenRequestDto) {
+    public AuthResponseDto refreshToken(@RequestBody RefreshTokenRequestDto refreshTokenRequestDto, BindingResult bindingResult) {
         return refreshTokenService.findByToken(refreshTokenRequestDto.getRefreshToken())
                 .map(refreshTokenService::verifyExpiredToken)
                 .map(RefreshToken::getUser)

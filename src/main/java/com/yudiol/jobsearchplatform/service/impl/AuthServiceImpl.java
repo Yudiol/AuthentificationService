@@ -3,6 +3,7 @@ package com.yudiol.jobsearchplatform.service.impl;//package com.yudiol.jobsearch
 import com.yudiol.jobsearchplatform.dto.AuthRequestDto;
 import com.yudiol.jobsearchplatform.dto.AuthResponseDto;
 import com.yudiol.jobsearchplatform.dto.UserDto;
+import com.yudiol.jobsearchplatform.exception.errors.NotFoundException;
 import com.yudiol.jobsearchplatform.mapper.UserMapper;
 import com.yudiol.jobsearchplatform.model.User;
 import com.yudiol.jobsearchplatform.repository.UserRepository;
@@ -13,7 +14,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,7 +47,7 @@ public class AuthServiceImpl implements AuthService {
 
     public User findById(Long id) {
         return userRepository.findById(id).orElseThrow(() ->
-                new UsernameNotFoundException(String.format("UserDetailsService: пользователь с id '%s' не найден", id)));
+                new NotFoundException("Пользователь", id));
     }
 
     public String getJwtToken(String username) {
