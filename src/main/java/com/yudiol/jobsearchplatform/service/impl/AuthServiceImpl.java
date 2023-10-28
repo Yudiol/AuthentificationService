@@ -47,7 +47,7 @@ public class AuthServiceImpl implements AuthService {
 
     public User findById(Long id) {
         return userRepository.findById(id).orElseThrow(() ->
-                new NotFoundException("Пользователь", id));
+                new NotFoundException("Пользователь", String.valueOf(id)));
     }
 
     public String getJwtToken(String username) {

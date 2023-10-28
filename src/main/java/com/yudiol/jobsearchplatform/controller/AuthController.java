@@ -61,18 +61,7 @@ public class AuthController {
     @Operation(summary = "Обновить access token")
     public AuthResponseDto refreshToken(@RequestBody @Valid RefreshTokenRequestDto refreshTokenRequestDto, BindingResult bindingResult) {
         ErrorsValidationChecker.checkValidationErrors(bindingResult);
-        return refreshTokenService.findByToken(refreshTokenRequestDto.getRefreshToken())
-                .map(refreshTokenService::verifyExpiredToken)
-                .map(RefreshToken::getUser)
-                .map(user -> {
-                    String accessToken = authService.getJwtToken(user.getEmail());
-                    return AuthResponseDto.builder()
-                            .id(user.getId())
-                            .email(user.getEmail())
-                            .accessToken(accessToken)
-                            .refreshToken(refreshTokenRequestDto.getRefreshToken())
-                            .build();
-                }).orElseThrow(() -> new RuntimeException("Something went wrong, access token has not been updated"));
+        return refreshTokenService.refreshToken(refreshTokenRequestDto);
     }
 
     @GetMapping("/{id}")

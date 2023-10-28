@@ -1,13 +1,17 @@
 package com.yudiol.jobsearchplatform.service.impl;
 
+import com.yudiol.jobsearchplatform.dto.AuthResponseDto;
 import com.yudiol.jobsearchplatform.dto.RefreshToken;
+import com.yudiol.jobsearchplatform.dto.RefreshTokenRequestDto;
+import com.yudiol.jobsearchplatform.exception.errors.InternalServerError;
+import com.yudiol.jobsearchplatform.exception.errors.NotFoundException;
 import com.yudiol.jobsearchplatform.model.User;
 import com.yudiol.jobsearchplatform.repository.RefreshTokenRepository;
 import com.yudiol.jobsearchplatform.repository.UserRepository;
+import com.yudiol.jobsearchplatform.service.AuthService;
 import com.yudiol.jobsearchplatform.service.RefreshTokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,11 +29,12 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
 
     private final RefreshTokenRepository refreshTokenRepository;
     private final UserRepository userRepository;
+    private final AuthService authService;
 
     @Transactional
     public RefreshToken createRefreshToken(String username) {
         User user = userRepository.findByEmail(username).orElseThrow(() ->
-                new UsernameNotFoundException(String.format("UserDetailsService: пользователь с username '%s' не найден", username)));
+                new NotFoundException("пользователь", username));
         refreshTokenRepository.deleteByUserId(user.getId());
         RefreshToken refreshToken = RefreshToken.builder()
                 .user(user)
@@ -43,11 +48,29 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
         return refreshTokenRepository.findByToken(refreshToken);
     }
 
+    public AuthResponseDto refreshToken(RefreshTokenRequestDto refreshTokenRequestDto) {
+        RefreshToken refreshToken = refreshTokenRepository.findByToken(refreshTokenRequestDto.getRefreshToken()).orElseThrow(() ->
+                new NotFoundException("Refresh token", refreshTokenRequestDto.getRefreshToken()));
+
+        return Optional.of(refreshToken)
+                .map(this::verifyExpiredToken)
+                .map(RefreshToken::getUser)
+                .map(user -> {
+                    String accessToken = authService.getJwtToken(user.getEmail());
+                    return AuthResponseDto.builder()
+                            .id(user.getId())
+                            .email(user.getEmail())
+                            .accessToken(accessToken)
+                            .refreshToken(refreshTokenRequestDto.getRefreshToken())
+                            .build();
+                }).orElseThrow(() -> new InternalServerError("Что-то пошло не так, внутренняя ошибка сервера"));
+    }
+
     @Transactional
     public RefreshToken verifyExpiredToken(RefreshToken refreshToken) {
         if (refreshToken.getExpiredDate().compareTo(Instant.now()) < 0) {
             refreshTokenRepository.delete(refreshToken);
-            // throw exception
+            throw new NotFoundException("Refresh token", refreshToken.getToken());
         }
         return refreshToken;
     }
