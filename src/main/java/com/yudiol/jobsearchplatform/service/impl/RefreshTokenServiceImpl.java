@@ -51,4 +51,9 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
         }
         return refreshToken;
     }
+
+    @Transactional
+    public void deleteByEmail(String name) {
+        refreshTokenRepository.deleteByEmail(name);
+    }
 }

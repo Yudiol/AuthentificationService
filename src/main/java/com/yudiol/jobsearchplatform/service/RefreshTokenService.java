@@ -10,4 +10,7 @@ public interface RefreshTokenService {
     Optional<RefreshToken> findByToken(String refreshToken);
 
     RefreshToken verifyExpiredToken(RefreshToken refreshToken);
+
+//    void deleteByUserId(Long id);
+    void deleteByEmail(String name);
 }
