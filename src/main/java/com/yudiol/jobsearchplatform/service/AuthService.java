@@ -8,7 +8,7 @@ import com.yudiol.jobsearchplatform.model.User;
 public interface AuthService {
     AuthResponseDto register(UserDto userDto);
 
-    AuthResponseDto createAuthToken(AuthRequestDto authenticationRequestDto);
+    AuthResponseDto createAuthToken(String username,String password);
 
     User findById(Long id);
 

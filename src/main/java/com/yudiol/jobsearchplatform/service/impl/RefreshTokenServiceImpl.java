@@ -8,10 +8,12 @@ import com.yudiol.jobsearchplatform.exception.errors.NotFoundException;
 import com.yudiol.jobsearchplatform.model.User;
 import com.yudiol.jobsearchplatform.repository.RefreshTokenRepository;
 import com.yudiol.jobsearchplatform.repository.UserRepository;
-import com.yudiol.jobsearchplatform.service.AuthService;
+import com.yudiol.jobsearchplatform.security.JwtTokenUtils;
 import com.yudiol.jobsearchplatform.service.RefreshTokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,19 +31,15 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
 
     private final RefreshTokenRepository refreshTokenRepository;
     private final UserRepository userRepository;
-    private final AuthService authService;
+    private final UserDetailsService userDetailsService;
+    private final JwtTokenUtils jwtTokenUtils;
 
     @Transactional
     public RefreshToken createRefreshToken(String username) {
         User user = userRepository.findByEmail(username).orElseThrow(() ->
                 new NotFoundException("пользователь", username));
         refreshTokenRepository.deleteByUserId(user.getId());
-        RefreshToken refreshToken = RefreshToken.builder()
-                .user(user)
-                .token(UUID.randomUUID().toString())
-                .expiredDate(Instant.now().plusSeconds(lifetimeRefreshToken))
-                .build();
-        return refreshTokenRepository.save(refreshToken);
+        return refreshToken(user);
     }
 
     public Optional<RefreshToken> findByToken(String refreshToken) {
@@ -56,7 +54,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
                 .map(this::verifyExpiredToken)
                 .map(RefreshToken::getUser)
                 .map(user -> {
-                    String accessToken = authService.getJwtToken(user.getEmail());
+                    String accessToken = this.getJwtToken(user.getEmail());
                     return AuthResponseDto.builder()
                             .id(user.getId())
                             .email(user.getEmail())
@@ -78,5 +76,20 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
     @Transactional
     public void deleteByEmail(String name) {
         refreshTokenRepository.deleteByEmail(name);
+    }
+
+    @Transactional
+    public RefreshToken refreshToken(User user) {
+        RefreshToken refreshToken = RefreshToken.builder()
+                .user(user)
+                .token(UUID.randomUUID().toString())
+                .expiredDate(Instant.now().plusSeconds(lifetimeRefreshToken))
+                .build();
+        return refreshTokenRepository.save(refreshToken);
+    }
+
+    public String getJwtToken(String username) {
+        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+        return jwtTokenUtils.generateToken(userDetails);
     }
 }

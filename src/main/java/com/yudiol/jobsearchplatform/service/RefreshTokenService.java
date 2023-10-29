@@ -3,6 +3,7 @@ package com.yudiol.jobsearchplatform.service;
 import com.yudiol.jobsearchplatform.dto.AuthResponseDto;
 import com.yudiol.jobsearchplatform.dto.RefreshToken;
 import com.yudiol.jobsearchplatform.dto.RefreshTokenRequestDto;
+import com.yudiol.jobsearchplatform.model.User;
 
 import java.util.Optional;
 
@@ -16,4 +17,6 @@ public interface RefreshTokenService {
     void deleteByEmail(String name);
 
     AuthResponseDto refreshToken(RefreshTokenRequestDto refreshTokenRequestDto);
+
+    RefreshToken refreshToken(User user);
 }

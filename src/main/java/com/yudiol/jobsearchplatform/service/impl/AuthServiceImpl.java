@@ -1,6 +1,5 @@
 package com.yudiol.jobsearchplatform.service.impl;//package com.yudiol.jobsearchplatform.service.impl;
 
-import com.yudiol.jobsearchplatform.dto.AuthRequestDto;
 import com.yudiol.jobsearchplatform.dto.AuthResponseDto;
 import com.yudiol.jobsearchplatform.dto.UserDto;
 import com.yudiol.jobsearchplatform.exception.errors.NotFoundException;
@@ -9,6 +8,7 @@ import com.yudiol.jobsearchplatform.model.User;
 import com.yudiol.jobsearchplatform.repository.UserRepository;
 import com.yudiol.jobsearchplatform.security.JwtTokenUtils;
 import com.yudiol.jobsearchplatform.service.AuthService;
+import com.yudiol.jobsearchplatform.service.RefreshTokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -17,6 +17,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -28,13 +30,14 @@ public class AuthServiceImpl implements AuthService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
+    private final RefreshTokenService refreshTokenService;
 
     @Transactional
-    public AuthResponseDto createAuthToken(AuthRequestDto auth) {
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(auth.getUsername(), auth.getPassword()));
-        String token = getJwtToken(auth.getUsername());
-        User user = userRepository.findByEmail(auth.getUsername()).orElseThrow();
-        return new AuthResponseDto(user.getId(), user.getEmail(), token, null);
+    public AuthResponseDto createAuthToken(String username, String password) {
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
+        String token = getJwtToken(username);
+        User user = userRepository.findByEmail(username).orElseThrow();
+        return new AuthResponseDto(user.getId(), user.getEmail(), token, UUID.randomUUID().toString());
     }
 
     @Transactional
@@ -42,7 +45,7 @@ public class AuthServiceImpl implements AuthService {
         User user = userMapper.toUser(userDto);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.save(user);
-        return new AuthResponseDto(user.getId(), user.getEmail(), user.getPassword(), null);
+        return new AuthResponseDto(user.getId(), user.getEmail(), getJwtToken(userDto.getEmail()), refreshTokenService.refreshToken(user).getToken());
     }
 
     public User findById(Long id) {

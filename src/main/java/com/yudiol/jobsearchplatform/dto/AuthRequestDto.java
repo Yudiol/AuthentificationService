@@ -8,10 +8,10 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 
 import static com.yudiol.jobsearchplatform.util.ValidationMessage.INCORRECT_FORMAT_EMAIL;
 import static com.yudiol.jobsearchplatform.util.ValidationMessage.INCORRECT_LENGTH_EMAIL;
+import static com.yudiol.jobsearchplatform.util.ValidationMessage.INCORRECT_LENGTH_PASSWORD;
 import static com.yudiol.jobsearchplatform.util.ValidationMessage.NOT_EMPTY_VALUE;
 
 @AllArgsConstructor
@@ -22,13 +22,13 @@ import static com.yudiol.jobsearchplatform.util.ValidationMessage.NOT_EMPTY_VALU
 public class AuthRequestDto {
 
     @NotBlank(message = "Поле 'Email'" + NOT_EMPTY_VALUE)
-    @Size(max = 250, message = INCORRECT_LENGTH_EMAIL)
+    @Size(max = 50, message = INCORRECT_LENGTH_EMAIL)
     @Email(message = INCORRECT_FORMAT_EMAIL)
     @Schema(description = "Почта", example = "Ivan@mail.com")
     private String username;
 
-    @NotBlank(message = "Поле 'Email'" + NOT_EMPTY_VALUE)
-    @Size(max = 250, message = INCORRECT_LENGTH_EMAIL)
+    @NotBlank(message = "Поле 'Password'" + NOT_EMPTY_VALUE)
+    @Size(max = 50, message = INCORRECT_LENGTH_PASSWORD)
     @Schema(description = "Пароль", example = "wH&bkYvkV(aD")
     private String password;
 }

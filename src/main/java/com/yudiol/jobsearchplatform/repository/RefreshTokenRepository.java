@@ -12,7 +12,7 @@ public interface RefreshTokenRepository extends JpaRepository<RefreshToken, Long
 
     void deleteByUserId(Long id);
 
-    @Modifying
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query(value = "DELETE FROM refresh r USING users u WHERE r.user_id=u.id AND email = ?1", nativeQuery = true)
     void deleteByEmail(String email);
 }

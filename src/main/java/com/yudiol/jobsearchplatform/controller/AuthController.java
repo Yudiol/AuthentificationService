@@ -5,6 +5,7 @@ import com.yudiol.jobsearchplatform.dto.AuthResponseDto;
 import com.yudiol.jobsearchplatform.dto.RefreshToken;
 import com.yudiol.jobsearchplatform.dto.RefreshTokenRequestDto;
 import com.yudiol.jobsearchplatform.dto.UserDto;
+import com.yudiol.jobsearchplatform.exception.errors.BadRequestError;
 import com.yudiol.jobsearchplatform.model.User;
 import com.yudiol.jobsearchplatform.service.AuthService;
 import com.yudiol.jobsearchplatform.service.RefreshTokenService;
@@ -37,6 +38,9 @@ public class AuthController {
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Регистрация пользователя")
     public AuthResponseDto register(@RequestBody @Valid UserDto userDto, BindingResult bindingResult) {
+        if (!userDto.getPassword().equals(userDto.getSecondPassword())) {
+            throw new BadRequestError("Пароли не совпадают");
+        }
         ErrorsValidationChecker.checkValidationErrors(bindingResult);
         return authService.register(userDto);
     }
@@ -45,7 +49,7 @@ public class AuthController {
     @Operation(summary = "Login")
     public AuthResponseDto createAuthToken(@RequestBody @Valid AuthRequestDto authRequestDto, BindingResult bindingResult) {
         ErrorsValidationChecker.checkValidationErrors(bindingResult);
-        AuthResponseDto authResponseDto = authService.createAuthToken(authRequestDto);
+        AuthResponseDto authResponseDto = authService.createAuthToken(authRequestDto.getUsername(),authRequestDto.getPassword());
         RefreshToken refreshToken = refreshTokenService.createRefreshToken(authRequestDto.getUsername());
         authResponseDto.setRefreshToken(refreshToken.getToken());
         return authResponseDto;
