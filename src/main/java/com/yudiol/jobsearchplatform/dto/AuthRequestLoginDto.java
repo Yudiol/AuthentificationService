@@ -18,8 +18,8 @@ import static com.yudiol.jobsearchplatform.util.ValidationMessage.NOT_EMPTY_VALU
 @NoArgsConstructor
 @Setter
 @Getter
-@Schema(description = "AuthRequestDto принимает username и password")
-public class AuthRequestDto {
+@Schema(description = "AuthRequestLoginDto принимает username и password")
+public class AuthRequestLoginDto {
 
     @NotBlank(message = "Поле 'Email'" + NOT_EMPTY_VALUE)
     @Size(max = 50, message = INCORRECT_LENGTH_EMAIL)

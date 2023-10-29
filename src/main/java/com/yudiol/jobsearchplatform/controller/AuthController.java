@@ -1,11 +1,12 @@
 package com.yudiol.jobsearchplatform.controller;
 
-import com.yudiol.jobsearchplatform.dto.AuthRequestDto;
+import com.yudiol.jobsearchplatform.dto.AuthRequestLoginDto;
+import com.yudiol.jobsearchplatform.dto.AuthRequestRefreshDto;
+import com.yudiol.jobsearchplatform.dto.AuthRequestRegDto;
 import com.yudiol.jobsearchplatform.dto.AuthResponseDto;
-import com.yudiol.jobsearchplatform.dto.RefreshToken;
-import com.yudiol.jobsearchplatform.dto.RefreshTokenRequestDto;
-import com.yudiol.jobsearchplatform.dto.UserDto;
+import com.yudiol.jobsearchplatform.dto.AuthResponseRefreshDto;
 import com.yudiol.jobsearchplatform.exception.errors.BadRequestError;
+import com.yudiol.jobsearchplatform.model.RefreshToken;
 import com.yudiol.jobsearchplatform.model.User;
 import com.yudiol.jobsearchplatform.service.AuthService;
 import com.yudiol.jobsearchplatform.service.RefreshTokenService;
@@ -37,7 +38,7 @@ public class AuthController {
     @PostMapping("/reg")
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Регистрация пользователя")
-    public AuthResponseDto register(@RequestBody @Valid UserDto userDto, BindingResult bindingResult) {
+    public AuthResponseDto register(@RequestBody @Valid AuthRequestRegDto userDto, BindingResult bindingResult) {
         if (!userDto.getPassword().equals(userDto.getSecondPassword())) {
             throw new BadRequestError("Пароли не совпадают");
         }
@@ -47,9 +48,9 @@ public class AuthController {
 
     @PostMapping("/login")
     @Operation(summary = "Login")
-    public AuthResponseDto createAuthToken(@RequestBody @Valid AuthRequestDto authRequestDto, BindingResult bindingResult) {
+    public AuthResponseDto createAuthToken(@RequestBody @Valid AuthRequestLoginDto authRequestDto, BindingResult bindingResult) {
         ErrorsValidationChecker.checkValidationErrors(bindingResult);
-        AuthResponseDto authResponseDto = authService.createAuthToken(authRequestDto.getUsername(),authRequestDto.getPassword());
+        AuthResponseDto authResponseDto = authService.createAuthToken(authRequestDto.getUsername(), authRequestDto.getPassword());
         RefreshToken refreshToken = refreshTokenService.createRefreshToken(authRequestDto.getUsername());
         authResponseDto.setRefreshToken(refreshToken.getToken());
         return authResponseDto;
@@ -63,13 +64,15 @@ public class AuthController {
 
     @PostMapping("/refresh")
     @Operation(summary = "Обновить access token")
-    public AuthResponseDto refreshToken(@RequestBody @Valid RefreshTokenRequestDto refreshTokenRequestDto, BindingResult bindingResult) {
+    public AuthResponseRefreshDto refreshToken(@RequestBody @Valid AuthRequestRefreshDto refreshTokenRequestDto, BindingResult bindingResult) {
         ErrorsValidationChecker.checkValidationErrors(bindingResult);
-        return refreshTokenService.refreshToken(refreshTokenRequestDto);
+        AuthResponseDto refresh = refreshTokenService.refreshToken(refreshTokenRequestDto);
+        return new AuthResponseRefreshDto(refresh.getId(), refresh.getEmail(), refresh.getAccessToken());
     }
 
     @GetMapping("/{id}")
-    public User findOne(@PathVariable("id") Long id) {
-        return authService.findById(id);
+    @Operation(summary = "Получить пользователя")
+    public User findOne(@PathVariable("id") Long id, Principal  principal) {
+        return authService.findById(id, principal.getName());
     }
 }

@@ -12,10 +12,9 @@ import lombok.Setter;
 @Setter
 @Getter
 @Builder
-@Schema(description = "AuthResponseDto отдаёт id, login, accessToken и refreshToken")
-public class AuthResponseDto {
+@Schema(description = "AuthResponseRefreshDto отдаёт id, login и token")
+public class AuthResponseRefreshDto {
     private Long id;
     private String email;
     private String accessToken;
-    private String refreshToken;
 }

@@ -1,8 +1,8 @@
 package com.yudiol.jobsearchplatform.service.impl;
 
 import com.yudiol.jobsearchplatform.dto.AuthResponseDto;
-import com.yudiol.jobsearchplatform.dto.RefreshToken;
-import com.yudiol.jobsearchplatform.dto.RefreshTokenRequestDto;
+import com.yudiol.jobsearchplatform.model.RefreshToken;
+import com.yudiol.jobsearchplatform.dto.AuthRequestRefreshDto;
 import com.yudiol.jobsearchplatform.exception.errors.InternalServerError;
 import com.yudiol.jobsearchplatform.exception.errors.NotFoundException;
 import com.yudiol.jobsearchplatform.model.User;
@@ -46,7 +46,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
         return refreshTokenRepository.findByToken(refreshToken);
     }
 
-    public AuthResponseDto refreshToken(RefreshTokenRequestDto refreshTokenRequestDto) {
+    public AuthResponseDto refreshToken(AuthRequestRefreshDto refreshTokenRequestDto) {
         RefreshToken refreshToken = refreshTokenRepository.findByToken(refreshTokenRequestDto.getRefreshToken()).orElseThrow(() ->
                 new NotFoundException("Refresh token", refreshTokenRequestDto.getRefreshToken()));
 

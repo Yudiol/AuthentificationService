@@ -1,4 +1,4 @@
-package com.yudiol.jobsearchplatform.dto;
+package com.yudiol.jobsearchplatform.model;
 
 import com.yudiol.jobsearchplatform.model.User;
 import jakarta.persistence.Column;

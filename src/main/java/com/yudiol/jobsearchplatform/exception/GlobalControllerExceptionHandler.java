@@ -1,7 +1,6 @@
 package com.yudiol.jobsearchplatform.exception;
 
 import com.yudiol.jobsearchplatform.exception.errors.BadRequestError;
-import com.yudiol.jobsearchplatform.exception.errors.BadRequestException;
 import com.yudiol.jobsearchplatform.exception.errors.EmailExistError;
 import com.yudiol.jobsearchplatform.exception.errors.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +24,7 @@ import static com.yudiol.jobsearchplatform.util.ValidationMessage.INCORRECT_JSON
 @Slf4j
 public class GlobalControllerExceptionHandler {
     @ExceptionHandler({BadRequestError.class, MethodArgumentNotValidException.class,
-            ConstraintViolationException.class, BadRequestException.class})
+            ConstraintViolationException.class})
     private ResponseEntity<ApiError> handelBadRequestException(RuntimeException e) {
         return getResponseError(e.getMessage(), HttpStatus.BAD_REQUEST);
     }

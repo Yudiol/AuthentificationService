@@ -1,7 +1,8 @@
 package com.yudiol.jobsearchplatform.service.impl;//package com.yudiol.jobsearchplatform.service.impl;
 
+import com.yudiol.jobsearchplatform.dto.AuthRequestRegDto;
 import com.yudiol.jobsearchplatform.dto.AuthResponseDto;
-import com.yudiol.jobsearchplatform.dto.UserDto;
+import com.yudiol.jobsearchplatform.exception.errors.BadRequestError;
 import com.yudiol.jobsearchplatform.exception.errors.NotFoundException;
 import com.yudiol.jobsearchplatform.mapper.UserMapper;
 import com.yudiol.jobsearchplatform.model.User;
@@ -41,16 +42,20 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Transactional
-    public AuthResponseDto register(UserDto userDto) {
+    public AuthResponseDto register(AuthRequestRegDto userDto) {
         User user = userMapper.toUser(userDto);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.save(user);
         return new AuthResponseDto(user.getId(), user.getEmail(), getJwtToken(userDto.getEmail()), refreshTokenService.refreshToken(user).getToken());
     }
 
-    public User findById(Long id) {
-        return userRepository.findById(id).orElseThrow(() ->
+    public User findById(Long id, String email) {
+        User user = userRepository.findById(id).orElseThrow(() ->
                 new NotFoundException("Пользователь", String.valueOf(id)));
+        if (!user.getEmail().equals(email)) {
+            throw new BadRequestError("Вы не имеете доступ к id = " + user.getId());
+        }
+        return user;
     }
 
     public String getJwtToken(String username) {

@@ -8,7 +8,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
-import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.HashMap;
@@ -21,10 +20,10 @@ public class JwtTokenUtils {
     private String secret;
 
     @Value("${jwt.lifetimeAccessToken}")
-    private Duration lifetimeAccessToken;
+    private Long lifetimeAccessToken;
 
     public String generateToken(UserDetails userDetails) {
-        Date expirationDate = Date.from(ZonedDateTime.now().plusMinutes(lifetimeAccessToken.toMinutes()).toInstant());
+        Date expirationDate = Date.from(ZonedDateTime.now().plusSeconds(lifetimeAccessToken).toInstant());
         List<String> roles = userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
         Map<String, Object> claims = new HashMap<>();
         claims.put("roles", roles);

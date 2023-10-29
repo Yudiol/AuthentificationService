@@ -27,8 +27,8 @@ import static com.yudiol.jobsearchplatform.util.ValidationMessage.NOT_SPACES_VAL
 @Setter
 @Getter
 @ToString
-@Schema(description = "UserDto принимает name, surname, login, password и secondPassword")
-public class UserDto {
+@Schema(description = "AuthRequestRegDto принимает name, surname, login, password и secondPassword")
+public class AuthRequestRegDto {
     @Pattern(message = "Поле 'Имя'" + INCORRECT_SYMBOL, regexp = "^[a-zA-Zа-яА-Я]{0,50}$")
     @NotBlank(message = "Поле 'Имя'" + NOT_EMPTY_VALUE)
     @Size(max = 50, message = INCORRECT_LENGTH_NAME)

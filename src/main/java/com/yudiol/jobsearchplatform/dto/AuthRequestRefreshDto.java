@@ -12,7 +12,7 @@ import static com.yudiol.jobsearchplatform.util.ValidationMessage.NOT_EMPTY_VALU
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class RefreshTokenRequestDto {
+public class AuthRequestRefreshDto {
     @NotBlank(message = "Поле 'Токен'" + NOT_EMPTY_VALUE)
     private String refreshToken;
 }
