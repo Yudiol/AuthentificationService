@@ -48,6 +48,9 @@ public class AuthRequestRegDto {
     @Schema(description = "Почта", example = "Ivan@mail.com")
     private String email;
 
+    @Pattern(message = "Поле 'Пароль' должно иметь одну заглавную букву", regexp = ".*[A-ZА-Я]+.*")
+    @Pattern(message = "Поле 'Пароль' должно иметь одну прописную букву", regexp = ".*[a-zа-я]+.*")
+    @Pattern(message = "Поле 'Пароль' должно иметь один спецсимвол", regexp = ".*[\\W]+.*")
     @Pattern(message = "Поле 'Пароль'" + NOT_SPACES_VALUE, regexp = "^[\\S]{0,50}$")
     @NotBlank(message = "Поле 'Пароль'" + NOT_EMPTY_VALUE)
     @Size(max = 50, message = INCORRECT_LENGTH_PASSWORD)
