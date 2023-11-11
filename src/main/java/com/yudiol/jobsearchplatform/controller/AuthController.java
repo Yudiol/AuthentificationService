@@ -1,8 +1,11 @@
 package com.yudiol.jobsearchplatform.controller;
 
+import com.yudiol.jobsearchplatform.dto.AuthRequestActivateDto;
 import com.yudiol.jobsearchplatform.dto.AuthRequestLoginDto;
+import com.yudiol.jobsearchplatform.dto.AuthRequestPasswordDto;
 import com.yudiol.jobsearchplatform.dto.AuthRequestRefreshDto;
 import com.yudiol.jobsearchplatform.dto.AuthRequestRegDto;
+import com.yudiol.jobsearchplatform.dto.AuthResponseActivateDto;
 import com.yudiol.jobsearchplatform.dto.AuthResponseDto;
 import com.yudiol.jobsearchplatform.dto.AuthResponseRefreshDto;
 import com.yudiol.jobsearchplatform.exception.errors.BadRequestError;
@@ -36,12 +39,10 @@ public class AuthController {
     private final RefreshTokenService refreshTokenService;
 
     @PostMapping("/reg")
-    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseStatus(HttpStatus.ACCEPTED)
     @Operation(summary = "Регистрация пользователя")
-    public AuthResponseDto register(@RequestBody @Valid AuthRequestRegDto userDto, BindingResult bindingResult) {
-        if (!userDto.getPassword().equals(userDto.getSecondPassword())) {
-            throw new BadRequestError("Пароли не совпадают");
-        }
+    public AuthResponseActivateDto register(@RequestBody @Valid AuthRequestRegDto userDto, BindingResult bindingResult) {
+        comparePassword(userDto.getPassword(), userDto.getSecondPassword());
         ErrorsValidationChecker.checkValidationErrors(bindingResult);
         return authService.register(userDto);
     }
@@ -57,6 +58,7 @@ public class AuthController {
     }
 
     @GetMapping("/logout")
+    @Operation(summary = "Logout")
     public String logout(Principal principal) {
         refreshTokenService.deleteByEmail(principal.getName());
         return null;
@@ -72,7 +74,36 @@ public class AuthController {
 
     @GetMapping("/{id}")
     @Operation(summary = "Получить пользователя")
-    public User findOne(@PathVariable("id") Long id, Principal  principal) {
+    public User findOne(@PathVariable("id") Long id, Principal principal) {
         return authService.findById(id, principal.getName());
+    }
+
+    @GetMapping("/activate/{activeCode}")
+    @ResponseStatus(HttpStatus.CREATED)
+    @Operation(summary = "Подтверждение учётной записи")
+    public AuthResponseDto activate(@PathVariable String activeCode) {
+        return authService.activate(activeCode);
+    }
+
+    @PostMapping("/activate")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    @Operation(summary = "запрос на подтверждение учётной записи")
+    public AuthResponseActivateDto activationRequest(@RequestBody @Valid AuthRequestActivateDto authRequestActivateDto, BindingResult bindingResult) {
+        ErrorsValidationChecker.checkValidationErrors(bindingResult);
+        return authService.activationRequest(authRequestActivateDto.getEmail());
+    }
+
+    @PostMapping("/reset")
+    @Operation(summary = "Сброс пароля")
+    public AuthResponseActivateDto reset(@RequestBody @Valid AuthRequestPasswordDto userDto, Principal principal, BindingResult bindingResult) {
+        comparePassword(userDto.getPassword(), userDto.getSecondPassword());
+        ErrorsValidationChecker.checkValidationErrors(bindingResult);
+        return authService.reset(principal.getName(), userDto.getPassword());
+    }
+
+    private void comparePassword(String password1, String password2) {
+        if (!password1.equals(password2)) {
+            throw new BadRequestError("Пароли не совпадают");
+        }
     }
 }

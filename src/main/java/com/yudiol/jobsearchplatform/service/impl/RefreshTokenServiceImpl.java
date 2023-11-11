@@ -1,10 +1,10 @@
 package com.yudiol.jobsearchplatform.service.impl;
 
-import com.yudiol.jobsearchplatform.dto.AuthResponseDto;
-import com.yudiol.jobsearchplatform.model.RefreshToken;
 import com.yudiol.jobsearchplatform.dto.AuthRequestRefreshDto;
+import com.yudiol.jobsearchplatform.dto.AuthResponseDto;
 import com.yudiol.jobsearchplatform.exception.errors.InternalServerError;
 import com.yudiol.jobsearchplatform.exception.errors.NotFoundException;
+import com.yudiol.jobsearchplatform.model.RefreshToken;
 import com.yudiol.jobsearchplatform.model.User;
 import com.yudiol.jobsearchplatform.repository.RefreshTokenRepository;
 import com.yudiol.jobsearchplatform.repository.UserRepository;
@@ -46,9 +46,9 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
         return refreshTokenRepository.findByToken(refreshToken);
     }
 
-    public AuthResponseDto refreshToken(AuthRequestRefreshDto refreshTokenRequestDto) {
-        RefreshToken refreshToken = refreshTokenRepository.findByToken(refreshTokenRequestDto.getRefreshToken()).orElseThrow(() ->
-                new NotFoundException("Refresh token", refreshTokenRequestDto.getRefreshToken()));
+    public AuthResponseDto refreshToken(AuthRequestRefreshDto authRequestRefreshDto) {
+        RefreshToken refreshToken = refreshTokenRepository.findByToken(authRequestRefreshDto.getRefreshToken()).orElseThrow(() ->
+                new NotFoundException("Refresh token", authRequestRefreshDto.getRefreshToken()));
 
         return Optional.of(refreshToken)
                 .map(this::verifyExpiredToken)
@@ -59,7 +59,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
                             .id(user.getId())
                             .email(user.getEmail())
                             .accessToken(accessToken)
-                            .refreshToken(refreshTokenRequestDto.getRefreshToken())
+                            .refreshToken(authRequestRefreshDto.getRefreshToken())
                             .build();
                 }).orElseThrow(() -> new InternalServerError("Что-то пошло не так, внутренняя ошибка сервера"));
     }

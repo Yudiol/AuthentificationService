@@ -3,3 +3,5 @@ databaseChangeLog:
       file: db/changelog/v.1.0.0/2023-10-24-create_table_user.sql
   - include:
       file: db/changelog/v.1.0.0/2023-10-28-create_table_refresh.sql
+  - include:
+      file: db/changelog/v.1.0.0/2023-11-10-add_fields.sql

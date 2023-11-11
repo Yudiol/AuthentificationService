@@ -1,0 +1,30 @@
+version: '3.8'
+services:
+  client-backend:
+#    image: client:0.0.1
+    build: .
+#      context: .
+#      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db-jsp
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db-jsp:5432/JobSearchPlatformDB
+      - SPRING_DATASOURCE_USERNAME=user
+      - SPRING_DATASOURCE_PASSWORD=password
+    volumes:
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+
+  db-jsp:
+    image: postgres:14-alpine
+    container_name: db-jsp
+    ports:
+      - "6541:5432"
+    volumes:
+      - /var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=JobSearchPlatformDB
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password

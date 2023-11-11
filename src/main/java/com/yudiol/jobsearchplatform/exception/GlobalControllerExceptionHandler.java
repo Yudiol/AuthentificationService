@@ -3,6 +3,7 @@ package com.yudiol.jobsearchplatform.exception;
 import com.yudiol.jobsearchplatform.exception.errors.BadRequestError;
 import com.yudiol.jobsearchplatform.exception.errors.EmailExistError;
 import com.yudiol.jobsearchplatform.exception.errors.NotFoundException;
+import com.yudiol.jobsearchplatform.exception.errors.UnconfirmedAccountError;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
@@ -48,6 +49,11 @@ public class GlobalControllerExceptionHandler {
     @ExceptionHandler
     private ResponseEntity<ApiError> handelUserEmailException(EmailExistError e) {
         return getResponseError(e.getMessage(), HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler
+    private ResponseEntity<ApiError> handelUserEmailException(UnconfirmedAccountError e) {
+        return getResponseError(e.getMessage(), HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler

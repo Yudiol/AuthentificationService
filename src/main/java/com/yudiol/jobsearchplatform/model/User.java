@@ -40,6 +40,12 @@ public class User {
     @Column(name = "password")
     private String password;
 
+    @Column(name = "is_active")
+    private boolean isActive;
+
+    @Column(name = "active_code")
+    private String activeCode;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

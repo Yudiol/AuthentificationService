@@ -32,8 +32,8 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/reg", "/auth/login","/auth/refresh").permitAll()
-                        .requestMatchers("/auth/logout").hasAuthority(Role.USER.toString())
+                        .requestMatchers("/auth/reg", "/auth/login", "/auth/refresh", "/auth/activate/*", "/auth/activate").permitAll()
+                        .requestMatchers("/auth/logout","/auth/reset").hasAuthority(Role.USER.toString())
                         .anyRequest().authenticated())
                 .httpBasic(Customizer.withDefaults())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
