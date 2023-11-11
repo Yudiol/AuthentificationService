@@ -18,8 +18,8 @@ public class SwaggerConfig {
                                 .contact(
                                         new Contact()
                                                 .email("Yudiol114@gmail.com")
-//                                                .url("https://github.com/")
-                                                .name("Roman Yudin | Kirill Kpozdeyev")
+                                                .url("https://github.com/Yudiol")
+                                                .name("Roman Yudin")
                                 )
                 );
     }

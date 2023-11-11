@@ -43,21 +43,20 @@ public class AuthRequestRegDto {
 
     @NotDuplicateEmail(message = DUPLICATE_EMAIL)
     @NotBlank(message = "Поле 'Email'" + NOT_EMPTY_VALUE)
-    @Size(max = 50, message = INCORRECT_LENGTH_EMAIL)
+    @Size(max = 70, message = INCORRECT_LENGTH_EMAIL)
     @Email(message = INCORRECT_FORMAT_EMAIL)
     @Schema(description = "Почта", example = "Ivan@mail.com")
     private String email;
 
-    @Pattern(message = "Поле 'Пароль' должно иметь одну заглавную букву", regexp = ".*[A-ZА-Я]+.*")
-    @Pattern(message = "Поле 'Пароль' должно иметь одну прописную букву", regexp = ".*[a-zа-я]+.*")
-    @Pattern(message = "Поле 'Пароль' должно иметь один спецсимвол", regexp = ".*[\\W]+.*")
-    @Pattern(message = "Поле 'Пароль'" + NOT_SPACES_VALUE, regexp = "^[\\S]{0,50}$")
+    @Pattern(message = "Поле 'Пароль' должно иметь хотя бы одну заглавную букву", regexp = ".*[A-ZА-Я]+.*")
+    @Pattern(message = "Поле 'Пароль' должно иметь хотя бы одну прописную букву", regexp = ".*[a-zа-я]+.*")
+    @Pattern(message = "Поле 'Пароль' должно иметь хотя бы один спецсимвол", regexp = ".*[\\W]+.*")
+    @Pattern(message = "Поле 'Пароль'" + NOT_SPACES_VALUE, regexp = "\\S+")
     @NotBlank(message = "Поле 'Пароль'" + NOT_EMPTY_VALUE)
-    @Size(max = 50, message = INCORRECT_LENGTH_PASSWORD)
+    @Size(min = 8, max = 50, message = INCORRECT_LENGTH_PASSWORD)
     @Schema(description = "Пароль", example = "wH&bkYvkV(aD")
     private String password;
 
     @Schema(description = "Пароль", example = "wH&bkYvkV(aD")
     private String secondPassword;
-
 }
