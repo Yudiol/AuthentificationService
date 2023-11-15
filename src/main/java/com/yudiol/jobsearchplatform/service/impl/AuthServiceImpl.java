@@ -98,7 +98,7 @@ public class AuthServiceImpl implements AuthService {
     public AuthResponseActivateDto reset(String email, String password) {
         User user = userRepository.findByEmail(email).orElseThrow(() ->
                 new NotFoundException("User", email));
-        user.setPassword(password);
+        user.setPassword(passwordEncoder.encode(password));
         userRepository.save(user);
         return new AuthResponseActivateDto("Пароль был успешно изменён");
     }
