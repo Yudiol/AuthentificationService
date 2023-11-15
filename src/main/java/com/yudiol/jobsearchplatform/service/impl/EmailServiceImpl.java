@@ -19,6 +19,7 @@ public class EmailServiceImpl {
         simpleMailMessage.setText(message);
         emailSender.send(simpleMailMessage);
     }
+
 }
 
 

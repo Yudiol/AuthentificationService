@@ -69,4 +69,5 @@ public class GlobalControllerExceptionHandler {
                 .date(LocalDateTime.now()).build();
         return ResponseEntity.status(apiError.getStatus()).body(apiError);
     }
+
 }
