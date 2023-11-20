@@ -119,4 +119,5 @@ public class AuthServiceImpl implements AuthService {
                 email,
                 activeCode));
     }
+
 }

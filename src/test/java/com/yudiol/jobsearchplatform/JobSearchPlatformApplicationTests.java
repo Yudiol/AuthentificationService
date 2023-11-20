@@ -9,5 +9,4 @@ class JobSearchPlatformApplicationTests {
 	@Test
 	void contextLoads() {
 	}
-
 }

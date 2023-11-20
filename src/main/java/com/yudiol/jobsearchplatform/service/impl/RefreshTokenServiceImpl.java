@@ -92,4 +92,5 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
         UserDetails userDetails = userDetailsService.loadUserByUsername(username);
         return jwtTokenUtils.generateToken(userDetails);
     }
+
 }

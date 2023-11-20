@@ -106,4 +106,5 @@ public class AuthController {
             throw new BadRequestError("Пароли не совпадают");
         }
     }
+
 }
