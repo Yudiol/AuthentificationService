@@ -11,6 +11,7 @@ import com.yudiol.jobsearchplatform.repository.UserRepository;
 import com.yudiol.jobsearchplatform.security.JwtTokenUtils;
 import com.yudiol.jobsearchplatform.service.AuthService;
 import com.yudiol.jobsearchplatform.service.RefreshTokenService;
+import com.yudiol.jobsearchplatform.util.Email;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -33,7 +34,7 @@ public class AuthServiceImpl implements AuthService {
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
     private final RefreshTokenService refreshTokenService;
-    private final EmailServiceImpl emailService;
+    private final Email email;
 
     private final String RESPONSE_ACTIVATE = "На почту которую вы указали отправили email";
 
@@ -50,7 +51,7 @@ public class AuthServiceImpl implements AuthService {
     public AuthResponseActivateDto register(AuthRequestRegDto userDto) {
         String activeCode = UUID.randomUUID().toString();
 
-        sendEmail(userDto.getEmail(), activeCode);
+        email.sendEmail(userDto.getEmail(), activeCode);
 
         User user = userMapper.toUser(userDto);
         user.setActiveCode(activeCode);
@@ -60,10 +61,10 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Transactional
-    public AuthResponseActivateDto activationRequest(String email) {
+    public AuthResponseActivateDto activationRequest(String mail) {
 
-        User user = userRepository.findByEmail(email).orElseThrow(() ->
-                new NotFoundException("Пользователь", email));
+        User user = userRepository.findByEmail(mail).orElseThrow(() ->
+                new NotFoundException("Пользователь", mail));
         String activeCode = user.getActiveCode();
 
         if (activeCode == null) {
@@ -73,7 +74,7 @@ public class AuthServiceImpl implements AuthService {
             userRepository.save(user);
         }
 
-        sendEmail(email, user.getActiveCode());
+        email.sendEmail(mail, user.getActiveCode());
 
         return new AuthResponseActivateDto(RESPONSE_ACTIVATE);
     }
@@ -110,13 +111,5 @@ public class AuthServiceImpl implements AuthService {
             throw new BadRequestError("Вы не имеете доступ к id = " + user.getId());
         }
         return user;
-    }
-
-    private void sendEmail(String email, String activeCode) {
-        emailService.sendSimpleEmail(email, "Подтверждение E-mail", String.format(
-                "Привет, %s! \n" +
-                        "Пожалуйста пройдите по ссылке что бы подтвердить свою учетную запись на JobSearchPlatform : http://localhost:8083/auth/activate/%s",
-                email,
-                activeCode));
     }
 }
