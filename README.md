@@ -1,11 +1,16 @@
 ## Сервис производит регистрацию пользователя и сброс пароля с подтверждением через почту, а также логин, логаут и обновление refresh токена. Используются технологии Spring Security и JWT.
 
-Запускаем через docker compose. Предворительно подключить SMTP и прописать его характеристики в application.properties.
+Запускаем через docker compose. Предворительно подключить SMTP и прописать его свойства в application.properties.
 ```
 spring.mail.host=
 spring.mail.port=
 spring.mail.username=
 spring.mail.password=
+```
+а также url ссылки в письме 
+Пример : http://localhost:8083
+```
+email.url=http://localhost:8083
 ```
 ## Эндпоинты
 
